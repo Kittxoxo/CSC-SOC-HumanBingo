@@ -1,0 +1,7 @@
+{
+  "name": "csc-soc-human-bingo",
+  "version": "2.0.0",
+  "private": true,
+  "description": "CSC-SoC College Days Human Bingo: attendance + BINGO incentives (Vercel + Supabase)",
+  "engines": { "node": ">=18" }
+}
