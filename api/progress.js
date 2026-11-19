@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   try {
     const b = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const { pid, mask } = b;
-    const name = clean(b.name, 28), sec = clean(b.sec, 24);
+    const name = clean(b.name, 40), sec = clean(b.sec, 60);
     if (name.length < 2) return res.status(400).json({ error: "name" });
     if (sec.length < 2) return res.status(400).json({ error: "section" });
     if (typeof pid !== "string" || !/^[a-z0-9]{8,24}$/.test(pid)) return res.status(400).json({ error: "pid" });

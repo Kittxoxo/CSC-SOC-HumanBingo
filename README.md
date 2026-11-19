@@ -1,7 +1,7 @@
-# CSC-SoC College Days — Human Bingo
+# CSC-SoC College Days: Kabanata XXI Bingo
 
 Attendance + BINGO incentive tracker for College Days. Students scan a QR code, check in with their name and
-course/year/section, find people who match the prompts and take selfies. Any completed line is a BINGO.
+block/section (irregular students input all their blocks), find people who match the prompts and take selfies. Any completed line is a BINGO.
 Officers see a live board, mark incentives as claimed, and export attendance as CSV.
 
 Stack: static page + Vercel serverless functions (`/api`) + **Supabase (Postgres)**. No npm dependencies.
@@ -50,4 +50,4 @@ Make a QR code of your site URL (any QR generator) and print it.
 - `public/index.html` the whole student + host app
 - `api/*.js` serverless endpoints; `api/_db.js` the Supabase client
 - `supabase/schema.sql` tables (`game_state`, `players`, `photos`)
-- Replace `public/favicon*`, `public/*.png` with the official CSC-SoC logo when ready.
+- The CSC-SoC logo is in `public/logo-512.png` (header, loader, favicons). The 24 prompts live in `DEF` inside `public/index.html`; the host can also edit them in the dashboard.

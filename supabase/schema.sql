@@ -42,3 +42,7 @@ alter table public.game_state enable row level security;
 alter table public.players    enable row level security;
 alter table public.photos     enable row level security;
 revoke all on public.game_state, public.players, public.photos from anon, authenticated;
+
+-- Newer Supabase projects do not give the server role access to new tables automatically. Grant it explicitly.
+grant usage on schema public to service_role;
+grant all on public.game_state, public.players, public.photos to service_role;
