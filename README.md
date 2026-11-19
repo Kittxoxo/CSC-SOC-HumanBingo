@@ -31,10 +31,10 @@ Make a QR code of your site URL (any QR generator) and print it.
 ## Running the event
 1. Before students arrive: open the site, tap **Host login**, check the prompts, save.
 2. Students scan and check in. Check-in counts as attendance even before the game starts.
-3. Host taps **Start** (set minutes). Time can be added or removed while running.
+3. Host taps **Turn game ON**. There is no countdown: the game stays ON until the host taps **Turn game OFF**. Use **Now showing** to set the ongoing event (students see it at the top of their screen); change it as events change.
 4. Live board (host only): see progress, mark **Incentive claimed** when you hand it out.
 5. When time is up: winners showcase, download cards, **Download attendance (CSV)**.
-6. **Reset** wipes all students and photos for the next session. Download your files first.
+6. **Reset** wipes all students and saved cards for the next session. Download your files first.
 
 ## Capacity (Supabase)
 - Built for a crowd: phones read a 3-second edge-cached state, so 1,000+ students do not hammer the database.
@@ -49,5 +49,11 @@ Make a QR code of your site URL (any QR generator) and print it.
 ## Files
 - `public/index.html` the whole student + host app
 - `api/*.js` serverless endpoints; `api/_db.js` the Supabase client
-- `supabase/schema.sql` tables (`game_state`, `players`, `photos`)
+- `supabase/schema.sql` tables (`game_state`, `players`)
 - The CSC-SoC logo is in `public/logo-512.png` (header, loader, favicons). The 24 prompts live in `DEF` inside `public/index.html`; the host can also edit them in the dashboard.
+
+## Storage
+Each student has ONE saved picture: their bingo card with the selfies already on it (about 100-150 KB), saved at 6, 12, 18 and 24 boxes and when the game turns OFF. About 3,000 students fit in Supabase's free 500 MB. Selfies are taken with the live camera only (front or rear); there is no gallery upload.
+
+## Upgrading an existing database
+Re-run `supabase/schema.sql` in the Supabase SQL Editor before deploying (it adds the card and event columns and drops the old `photos` table).

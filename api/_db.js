@@ -69,14 +69,14 @@ async function del(table, filter) {
 
 // ---- game state (one row), with a 1.5 s memory cache so a burst of check-ins doesn't hit the database every time ----
 let cache = null, cacheAt = 0;
-const STATE_COLS = "status,started_ms,duration_ms,reset_at,showcase_open,showcase_rank,prompts";
+const STATE_COLS = "status,started_ms,duration_ms,reset_at,showcase_open,showcase_rank,prompts,event_name";
 async function getState(fresh) {
   if (!fresh && cache && Date.now() - cacheAt < 1500) return cache;
   const [r] = await select("game_state", "select=" + STATE_COLS + "&id=eq.1");
   if (!r) throw new DbError(404, "game_state row missing - run supabase/schema.sql", "game_state");
   cache = {
     status: r.status, startedAt: r.started_ms || null, duration: r.duration_ms || 600000, resetAt: r.reset_at || 0,
-    showcase: { open: !!r.showcase_open, rank: r.showcase_rank || 1 }, prompts: Array.isArray(r.prompts) ? r.prompts : null,
+    showcase: { open: !!r.showcase_open, rank: r.showcase_rank || 1 }, prompts: Array.isArray(r.prompts) ? r.prompts : null, event: r.event_name || "",
   };
   cacheAt = Date.now();
   return cache;
