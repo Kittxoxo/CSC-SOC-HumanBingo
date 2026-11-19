@@ -11,11 +11,13 @@ module.exports = async (req, res) => {
   try {
     const st = await db.getState(true);
     const players = await db.count("players");
+    await db.select("players", "select=card_at,card_img&limit=1"); // fails if the latest schema.sql was not run
     res.status(200).json({ ok: true, database: "connected", status: st.status, checkedIn: players });
   } catch (e) {
     let problem = "Could not reach the database.";
     if (e.status === 401) problem = "Supabase does not recognise the key. Re-copy the secret key (Project Settings > API Keys) into SUPABASE_SECRET_KEY with no spaces or quotes, then redeploy.";
     else if (e.status === 403) problem = "The key is accepted but has no permission on the tables. Run the last 3 lines of supabase/schema.sql (the grant lines) in the Supabase SQL Editor.";
+    else if (e.status === 400) problem = "Database is out of date: run the latest supabase/schema.sql in the Supabase SQL Editor.";
     else if (e.status === 404) problem = "Tables not found. Run supabase/schema.sql in the Supabase SQL Editor.";
     else if (e.status === 0) problem = "Missing environment variables.";
     res.status(500).json({ ok: false, problem, code: e.status || 0 });

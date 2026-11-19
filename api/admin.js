@@ -101,6 +101,10 @@ module.exports = async (req, res) => {
     }
   } catch (e) {
     console.error("admin", body.action, e.status, e.body || e.message);
-    return res.status(500).json({ error: "server" });
+    const raw = JSON.stringify(e.body || e.message || "");
+    const hint = /column|42703|PGRST204|PGRST200|does not exist/i.test(raw)
+      ? "Database is out of date: run the latest supabase/schema.sql in the Supabase SQL Editor, then try again."
+      : "Server error. Check Vercel > Logs.";
+    return res.status(500).json({ error: "server", hint });
   }
 };
