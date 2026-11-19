@@ -1,7 +1,7 @@
 # CSC-SoC College Days: Kabanata XXI Bingo
 
 Attendance + BINGO incentive tracker for College Days. Students scan a QR code, check in with their name and
-block/section (irregular students input all their blocks), find people who match the prompts and take selfies. Any completed line is a BINGO.
+block/section (irregular students input all their blocks), find people who match the prompts and take selfies. A BINGO is a blackout (every box filled). Students show it to their SoC professors to qualify for possible incentives.
 Officers see a live board, mark incentives as claimed, and export attendance as CSV.
 
 Stack: static page + Vercel serverless functions (`/api`) + **Supabase (Postgres)**. No npm dependencies.

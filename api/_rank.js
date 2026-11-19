@@ -3,12 +3,9 @@ const crypto = require("crypto");
 const bits = (m) => { let c = 0; while (m) { c += m & 1; m >>>= 1; } return c; };
 const hid = (pid) => crypto.createHash("sha1").update(pid).digest("hex").slice(0, 10);
 
-// all 12 bingo lines on the 5x5 card (centre box 12 is FREE)
-const WINS = [];
-for (let r = 0; r < 5; r++) WINS.push([0, 1, 2, 3, 4].map((c) => r * 5 + c));
-for (let c = 0; c < 5; c++) WINS.push([0, 1, 2, 3, 4].map((r) => r * 5 + c));
-WINS.push([0, 6, 12, 18, 24], [4, 8, 12, 16, 20]);
-const hasBingo = (m) => { const f = m | (1 << 12); return WINS.some((l) => l.every((i) => f & (1 << i))); };
+// Blackout rules: a BINGO means every box on the card is filled (all 24 squares; the centre is FREE).
+const FULL = (1 << 25) - 1;
+const hasBingo = (m) => ((m | (1 << 12)) & FULL) === FULL;
 
 // a database row -> the player object the rest of the code uses
 const fromRow = (r) => ({
