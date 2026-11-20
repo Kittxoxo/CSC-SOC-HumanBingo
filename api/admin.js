@@ -69,8 +69,9 @@ module.exports = async (req, res) => {
       }
       case "board": { // live board: check-ins, progress, bingo + claim status
         const [rows, photos] = await Promise.all([
-          db.selectAll("players", "select=" + PLAYER_COLS + "&order=pid.asc"),
-          db.count("players", "card_at=gt.0"),
+          db.selectAll("players", "select=" + PLAYER_COLS + "&order=pid.asc")
+            .catch((e) => { if (e.status !== 400) throw e; return db.selectAll("players", "select=" + PLAYER_COLS.replace(",card_at", "") + "&order=pid.asc"); }),
+          db.count("players", "card_at=gt.0").catch(() => 0),
         ]);
         const players = rows.map(fromRow).map((p) => ({ pid: p.pid, name: p.name, sec: p.sec, mask: p.mask, t: p.t, c: p.c, bt: p.bt, claimed: p.claimed, ca: p.ca }));
         return res.status(200).json({ status: state.status, startedAt: state.startedAt, duration: state.duration, players, photos });
