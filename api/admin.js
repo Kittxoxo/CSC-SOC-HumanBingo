@@ -31,9 +31,7 @@ module.exports = async (req, res) => {
     switch (body.action) {
       case "start": {
         if (state.status === "running" && state.startedAt && now < state.startedAt + state.duration) return res.status(409).json({ error: "already started" });
-        // new round: card pictures, boxes and claims are cleared, but students stay checked in
-        try { await db.patch("players", ALL, { mask: 0, t_ms: now, bingo_ms: 0, claimed_ms: 0, card_img: null, card_thumb: null, card_at: 0 }); }
-        catch (e) { if (e.status !== 400) throw e; await db.patch("players", ALL, { mask: 0, t_ms: now, bingo_ms: 0, claimed_ms: 0 }); } // older database without card columns: still start
+        // ON never wipes anything: it resumes (or begins) the game. Only Reset clears students, cards and attendance.
         await db.setState({ status: "running", started_ms: now, duration_ms: 12 * 60 * 60 * 1000, /* no countdown: the game stays ON until the host ends it */ showcase_open: false, showcase_rank: 1 });
         return res.status(200).json({ ok: true });
       }

@@ -57,3 +57,8 @@ Each student has ONE saved picture: their bingo card with the selfies already on
 
 ## Upgrading an existing database
 Re-run `supabase/schema.sql` in the Supabase SQL Editor before deploying (it adds the card and event columns and drops the old `photos` table).
+
+## ON, OFF and Reset
+- **Turn game ON / OFF** works like pause and resume. OFF shows "Bingo on hold" to students; their cards and progress are kept. Turning it back ON resumes where everyone left off.
+- **Reset game** wipes everything: every student's card on every device (they return to the sign-up screen), the live board, attendance and saved card images. Download the attendance CSV and cards first.
+- The four house mascots live in `public/mascots/` (animated sprite sheets).
