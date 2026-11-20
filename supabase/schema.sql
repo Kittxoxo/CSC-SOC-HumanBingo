@@ -37,11 +37,19 @@ alter table public.players add column if not exists card_at    bigint not null d
 -- older versions stored every selfie in this table; it is no longer used
 drop table if exists public.photos;
 
+-- host-login lockout (5 wrong passwords = temporary lock)
+create table if not exists public.admin_attempts (
+  ip       text primary key,
+  fails    int    not null default 0,
+  until_ms bigint not null default 0
+);
+
 -- Security: Row Level Security ON with NO policies. Phones never talk to Supabase directly.
 alter table public.game_state enable row level security;
 alter table public.players    enable row level security;
-revoke all on public.game_state, public.players from anon, authenticated;
+alter table public.admin_attempts enable row level security;
+revoke all on public.game_state, public.players, public.admin_attempts from anon, authenticated;
 
 -- Newer Supabase projects do not give the server role access to new tables automatically.
 grant usage on schema public to service_role;
-grant all on public.game_state, public.players to service_role;
+grant all on public.game_state, public.players, public.admin_attempts to service_role;

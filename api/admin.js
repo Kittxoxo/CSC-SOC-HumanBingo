@@ -15,13 +15,35 @@ function okPassword(given) {
   return crypto.timingSafeEqual(a, b);
 }
 
+// Host-login lockout: 5 wrong passwords from one address locks it for 2, 4, 8, 16, then 30 minutes.
+const mem = new Map();
+const ipOf = (req) => String((req.headers["x-forwarded-for"] || "").split(",")[0] || (req.socket && req.socket.remoteAddress) || "unknown").trim().slice(0, 64);
+async function getAtt(ip) {
+  try { const [r] = await db.select("admin_attempts", "select=fails,until_ms&ip=eq." + encodeURIComponent(ip)); return r || { fails: 0, until_ms: 0 }; }
+  catch (e) { return mem.get(ip) || { fails: 0, until_ms: 0 }; } // table missing: per-server memory still slows guessing
+}
+async function setAtt(ip, v) {
+  mem.set(ip, v);
+  try { await db.upsert("admin_attempts", [{ ip, fails: v.fails, until_ms: v.until_ms }], "ip"); } catch (e) { /* run the latest schema.sql to make this permanent */ }
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") return res.status(405).json({ error: "method" });
   let body;
   try { body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {}; }
   catch (e) { return res.status(400).json({ error: "json" }); }
-  if (!okPassword(body.password)) return res.status(401).json({ error: "unauthorized" });
+  const ip = ipOf(req);
+  const att = await getAtt(ip);
+  if (att.until_ms > Date.now()) return res.status(429).json({ error: "locked", wait: Math.ceil((att.until_ms - Date.now()) / 1000) });
+  if (!okPassword(body.password)) {
+    const fails = att.fails + 1;
+    const until = fails >= 5 ? Date.now() + Math.min(30, 2 * Math.pow(2, fails - 5)) * 60000 : 0;
+    await setAtt(ip, { fails, until_ms: until });
+    await new Promise((r) => setTimeout(r, 600));
+    return res.status(401).json({ error: "unauthorized" });
+  }
+  if (att.fails) await setAtt(ip, { fails: 0, until_ms: 0 });
 
   try {
     if (body.action === "check") return res.status(200).json({ ok: true });

@@ -62,3 +62,9 @@ Re-run `supabase/schema.sql` in the Supabase SQL Editor before deploying (it add
 - **Turn game ON / OFF** works like pause and resume. OFF shows "Bingo on hold" to students; their cards and progress are kept. Turning it back ON resumes where everyone left off.
 - **Reset game** wipes everything: every student's card on every device (they return to the sign-up screen), the live board, attendance and saved card images. Download the attendance CSV and cards first.
 - The four house mascots live in `public/mascots/` (animated sprite sheets).
+
+## Privacy, security and weak signal
+- Sign-up shows a Data Privacy Notice with two required checkboxes. The notice promises that data is deleted after the event, so **Reset the game and download what you need once attendance and incentives are settled.**
+- Host login locks an address for 2, 4, 8, 16 then 30 minutes after 5 wrong passwords. Run the latest `supabase/schema.sql` once so the lock is saved in the database (it adds the `admin_attempts` table).
+- Facebook, Messenger and Instagram browsers get a banner asking students to open the link in Chrome or Safari.
+- Mascots load after the page is ready: about 1 MB on phones (`public/mascots/lite/`), the full set on big screens. Weak signal mode skips them.
