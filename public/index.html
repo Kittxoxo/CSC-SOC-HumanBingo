@@ -412,12 +412,15 @@ filter:drop-shadow(1px 1px 0 #aab9f2) drop-shadow(2px 2px 0 #7f8ee4) drop-shadow
 .hdr b{font-size:clamp(1.9rem,9vw,2.8rem)!important}
 h1 .kbb{letter-spacing:.5em}
 
-/* round 12: embossed text */
-.mech li span,.qsub,.qsub b,#msg,#fctext,.fhint,#finmsg,.chk span,.tag,.sub,.lbl,.lab,.qbig,.sq,.sq *,#timer,.meta,.livetitle,#wname,#wsec{
-text-shadow:-1px -1px 0 rgba(255,255,255,.75),1px 1px 0 rgba(38,22,120,.7),2px 3px 5px rgba(30,15,100,.38)!important}
-.hdr b,.mech li::before{text-shadow:1px 1px 0 rgba(255,255,255,.95),-1px -1px 1px rgba(60,20,90,.55)!important}
-.tag{text-shadow:-1px -1px 0 rgba(255,255,255,.8),1px 1px 0 rgba(120,30,110,.75),2px 3px 6px rgba(70,20,110,.4)!important}
 button.alt,#tilt,#enableTilt{background:rgba(48,36,130,.5)!important;color:#fff!important}
+
+/* round 13: header spacing */
+#reg h1,#play h1{margin:30px 0 0!important}
+h1 .kb{margin:0 -.25em!important;padding:.14em .25em .12em!important}
+h1 .kbb{margin-top:26px!important}
+.sub{margin:22px 0 8px!important}
+.tag{margin:6px 0 20px!important}
+#timer{margin-bottom:6px}
 </style>
 </head><body><div id="loader" class="loader" role="status" aria-live="polite"><img id="lgif" src="/logo-512.png" alt="" onload="window.__a0=performance.now()"><div id="lmsg">Loading…</div><div class="lbar"><i></i></div></div><canvas id="bg" aria-hidden="true"></canvas><div id="mascots" class="mascots" aria-hidden="true"><div class="mc m1" data-s="phoenix" style="aspect-ratio:296/339;background-image:url(/mascots/phoenix.webp)"></div><div class="mc m2" data-s="girl" style="aspect-ratio:151/300;background-image:url(/mascots/girl.webp)"></div><div class="mc m3" data-s="sage" style="aspect-ratio:192/360;background-image:url(/mascots/sage.webp)"></div><div class="mc m4" data-s="boy" style="aspect-ratio:170/300;background-image:url(/mascots/boy.webp)"></div></div>
 <main>
@@ -570,7 +573,6 @@ $("lbclaim").onclick=async()=>{const p=lastPlayers.find(x=>x.pid===bigPid);if(!p
 $("toLive").onclick=openLive;$("lclose").onclick=closeLive;$("lbx").onclick=()=>$("lbig").close();
 function wrapText(x,t,maxW){const w=t.split(" "),lines=[];let l="";for(const a of w){const tt=l?l+" "+a:a;if(x.measureText(tt).width>maxW&&l){lines.push(l);l=a}else l=tt}if(l)lines.push(l);return lines}
 function rr(c,x,y,w,h,r,fill,stroke){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=4;c.stroke()}}
-function embT(x,t,X,Y){x.save();x.shadowColor="transparent";x.fillStyle="rgba(30,15,100,.8)";x.fillText(t,X+2,Y+2.5);x.fillStyle="rgba(255,255,255,.6)";x.fillText(t,X-1.5,Y-1.5);x.fillStyle="#fff";x.fillText(t,X,Y);x.restore()}
 async function drawCard(o){o=o||{name:myName,done:done,pics:pics};const D=o.done,PX=o.pics;try{await document.fonts.ready}catch(e){}
 const W=1080,PAD=60,HEAD=340,BING=120,G=W-PAD*2,C=G/5,H=HEAD+BING+G+520,HD='"Archivo Black",Impact,"Arial Black",sans-serif',SANS='Archivo,"Segoe UI",Arial,sans-serif',TW='"Special Elite","Courier New",monospace';
 const cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
@@ -587,7 +589,7 @@ if(i===12){rr(x,cx,cy,s2,s2,14,"#f6cf72","#fff");x.strokeStyle="#5a1030";x.lineW
 const t=cells()[i],isD=!!D[i];if(isD)n++;
 let im=null;if(isD&&PX[i])im=await new Promise(r=>{const m=new Image();m.onload=()=>r(m);m.onerror=()=>r(null);m.src=PX[i]});
 if(im){x.save();rr(x,cx,cy,s2,s2,14);x.clip();x.drawImage(im,cx,cy,s2,s2);x.fillStyle="rgba(26,10,5,.78)";x.fillRect(cx,cy+s2-62,s2,62);x.restore();x.fillStyle="#fff";x.font="24px "+TW;const l2=wrapText(x,t,s2-16).slice(0,2);l2.forEach((q,k)=>x.fillText(q,cx+s2/2,cy+s2-36+k*26+(l2.length===1?12:0)))}
-else{x.fillStyle="#fff";x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=4;let fs=28,l2=[];for(;fs>=13;fs--){x.font=fs+"px "+TW;l2=wrapText(x,t,s2-18);if(l2.length<=3&&l2.every(q=>x.measureText(q).width<=s2-14))break}l2=l2.slice(0,3);const y0=cy+s2/2-(l2.length-1)*fs*.6+fs*.3;l2.forEach((q,k)=>embT(x,q,cx+s2/2,y0+k*fs*1.2));x.shadowColor="transparent";x.shadowBlur=0;
+else{x.fillStyle="#fff";x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=4;let fs=28,l2=[];for(;fs>=13;fs--){x.font=fs+"px "+TW;l2=wrapText(x,t,s2-18);if(l2.length<=3&&l2.every(q=>x.measureText(q).width<=s2-14))break}l2=l2.slice(0,3);const y0=cy+s2/2-(l2.length-1)*fs*.6+fs*.3;l2.forEach((q,k)=>x.fillText(q,cx+s2/2,y0+k*fs*1.2));x.shadowColor="transparent";x.shadowBlur=0;
 if(isD){x.fillStyle="rgba(255,200,100,.28)";x.strokeStyle="#ffd77a";x.lineWidth=8;x.beginPath();x.arc(cx+s2/2,cy+s2/2,s2*.42,0,7);x.fill();x.stroke()}}
 x.textAlign="left";x.fillStyle=im?"#fff":"rgba(255,255,255,.88)";x.font="22px "+TW;x.fillText(String(num(i)),cx+10,cy+27);x.textAlign="center";
 if(im){x.fillStyle="#fff";x.beginPath();x.arc(cx+s2-24,cy+24,16,0,7);x.fill();x.fillStyle="#a8101f";x.font="900 22px "+SANS;x.fillText("✓",cx+s2-24,cy+32)}
