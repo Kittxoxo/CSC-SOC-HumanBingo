@@ -384,7 +384,7 @@ filter:drop-shadow(0 1px 0 rgba(255,255,255,.7)) drop-shadow(0 8px 12px rgba(40,
 <div class="ioslabel">Game</div>
 <div class="ios">
 <div class="irow2"><span class="lab">Now showing</span><input id="evt" list="evl" maxlength="80" placeholder="e.g. Spelling Bee" style="flex:1;min-width:0"><button type="button" id="evset" class="alt">Set</button></div><datalist id="evl"><option value="Opening Parade"><option value="Dean's Opening Remarks"><option value="Opening Salvo"><option value="Spelling Bee"><option value="Quiz Bee Competition"><option value="Basketball"><option value="Volleyball"><option value="Badminton"><option value="Pickleball"><option value="Laro ng Lahi"><option value="Battle of the Bands"><option value="Best Dance Crew Competition"><option value="Faculty Feud"><option value="Mr. and Ms. SOC"><option value="Mobile Legends Finals"><option value="Valorant Finals"><option value="Awarding of Winners"></datalist>
-<div class="pad"><button id="go" class="bigbtn">Turn game ON</button></div>
+<div class="pad"><button id="go" class="bigbtn">Turn game ON</button><button id="off" type="button" class="bigbtn hide" style="background:linear-gradient(180deg,#e5484d,#a3121c);color:#fff">Turn game OFF</button></div>
 <button class="irow danger" id="reset" type="button"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v5h5"/></svg><span>Reset game</span></button>
 </div>
 <div class="ioslabel">Stop</div>
@@ -446,7 +446,7 @@ else{s="Game over";t.className="low"}t.textContent=s;
 if(p==="FINISHED"&&!tick.f){tick.f=1;$("msg").textContent="Tap Save my card to keep a copy of your final card.";if($("dlg").open)$("dlg").close()}if(p!=="FINISHED")tick.f=0;
 if(isAdmin){const st=$("astat");st.className="ios hero "+p.toLowerCase();st.querySelector(".chip").textContent=p;
 $("atime").textContent=p==="RUNNING"?"ON":"OFF";
-$("ameta").textContent=(p==="RUNNING"?(evt?"Now showing: "+evt:"No event set")+"  \u2022  ":"")+photosTotal+" cards saved"}$("go").disabled=p==="RUNNING";$("endnow").disabled=p!=="RUNNING";if(liveOpen){$("ltimer").textContent=$("timer").textContent;$("ltimer").className=$("timer").className.includes("low")?"low":""}finale(p);fcardUpdate(p);$("startshow").disabled=p!=="FINISHED";$("lshow").disabled=p!=="FINISHED"}
+$("ameta").textContent=(p==="RUNNING"?(evt?"Now showing: "+evt:"No event set")+"  \u2022  ":"")+photosTotal+" cards saved"}$("go").classList.toggle("hide",p==="RUNNING");$("off").classList.toggle("hide",p!=="RUNNING");$("go").disabled=false;$("endnow").disabled=p!=="RUNNING";if(liveOpen){$("ltimer").textContent=$("timer").textContent;$("ltimer").className=$("timer").className.includes("low")?"low":""}finale(p);fcardUpdate(p);$("startshow").disabled=p!=="FINISHED";$("lshow").disabled=p!=="FINISHED"}
 function finale(p){const fin=$("fin");if(p!=="FINISHED"){finDone=false;finBegun=false;fin.classList.add("hide");return}
 if(finDone)return;const since=Date.now()+off-(state.startedAt+DUR);
 if(since>=FIN){finDone=true;fin.classList.add("hide");return}
@@ -722,8 +722,9 @@ let cds=0;for(const x of cd)cds+=x.byteLength;
 const e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cds,true);e.setUint32(16,off2,true);
 return new Blob([...parts,...cd,e.buffer],{type:"application/zip"})}
 $("clr").onclick=async()=>{if(!confirm("Delete ALL saved card pictures? This can't be undone."))return;try{await adminCall("clearphotos");$("amsg").textContent="Saved cards deleted.";poll()}catch(e){$("amsg").textContent="Failed."}};
-$("evset").onclick=async()=>{try{await adminCall("event",{name:$("evt").value});$("amsg").textContent="Now showing: "+($("evt").value||"(none)");poll()}catch(e){$("amsg").textContent="Could not update the event."}};
+$("evset").onclick=async()=>{try{await adminCall("event",{name:$("evt").value});$("amsg").textContent="Now showing: "+($("evt").value||"(none)");poll()}catch(e){const m=e.hint||"Could not update the event.";$("amsg").textContent=m;alert(m)}};
 $("evt").onkeydown=e=>{if(e.key==="Enter")$("evset").click()};
+$("off").onclick=()=>$("endnow").click();
 $("endnow").onclick=async()=>{if(!confirm("Turn the game OFF for everyone?"))return;try{await adminCall("endnow");$("amsg").textContent="Game is OFF.";poll()}catch(e){$("amsg").textContent="No round is running."}};
 async function freshPrompts(){if(promptsDirty)return;try{const d=await api("/api/state?c="+Date.now());if(Array.isArray(d.prompts)&&d.prompts.length===24)prompts=d.prompts}catch(e){}}
 $("attend").onclick=async()=>{const endL=startLoad("Building attendance…",700);
