@@ -9,7 +9,7 @@ body::after{content:"";position:fixed;inset:0;z-index:-3;pointer-events:none;bac
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.28;mix-blend-mode:overlay;background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 #bg{position:fixed;inset:0;width:100%;height:100%;z-index:-2;pointer-events:none}
 main{max-width:520px;margin:0 auto;padding:10px 14px 48px}
-.logos{display:flex;justify-content:center;gap:10px;margin:8px 0 2px}.logos img{width:46px;height:46px;border-radius:50%;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.logos{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;display:flex;justify-content:center;gap:10px;margin:8px 0 2px}.logos img{width:46px;height:46px;border-radius:50%;box-shadow:0 4px 14px rgba(0,0,0,.35)}
 h1{font-family:var(--hd);font-weight:400;text-transform:uppercase;letter-spacing:-.045em;line-height:.9;margin:16px 0 0;font-size:clamp(2.6rem,15vw,4rem);text-align:center;color:#fff;text-shadow:0 6px 22px rgba(60,5,0,.45)}
 h2,h3{font-family:var(--hd);font-weight:400;text-transform:uppercase;letter-spacing:-.02em;margin:.3em 0}
 .sub{text-align:center;font-weight:800;letter-spacing:.18em;font-size:.72rem;text-transform:uppercase;margin:8px 0 10px}
@@ -492,7 +492,7 @@ box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 22px rgba(120,10,40,.38)!i
 <div id="amsg" class="amsg"></div>
 </section>
 <p class="weakrow"><button type="button" class="alt weakBtn"></button></p>
-<p id="adminLink" class="hide" style="text-align:center"><button class="alt" id="toAdmin">Host login</button></p>
+<p id="adminLink" class="hide" style="display:none"><button class="alt" id="toAdmin">Host login</button></p>
 </main>
 <div id="live" class="live hide" role="dialog" aria-label="Live board"><canvas class="bgc" aria-hidden="true"></canvas><div id="lmascots" class="mascots" aria-hidden="true"><div class="mc m1" data-s="phoenix" style="aspect-ratio:296/339" data-lazy="1"></div><div class="mc m2" data-s="girl" style="aspect-ratio:151/300" data-lazy="1"></div><div class="mc m3" data-s="sage" style="aspect-ratio:192/360" data-lazy="1"></div><div class="mc m4" data-s="boy" style="aspect-ratio:170/300" data-lazy="1"></div></div>
 <div class="lhead"><div class="livetitle">Kabanata XXI<br>Live board</div><div id="ltimer">--:--</div><div id="lstat" style="font-weight:800"></div><button id="lshow" class="alt"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3"/><path d="M12 13v4M8 20h8M10 17h4"/></svg>Winners showcase</button><button id="lclose" class="alt">Close live board</button></div><div id="lwin"></div><div id="lempty" class="hide">Waiting for players to join…</div><div id="lgrid"></div></div>
@@ -531,13 +531,13 @@ function render(){const g=$("grid");g.textContent="";cells().forEach((t,i)=>{con
 b.onclick=()=>open(i);g.appendChild(b)});const n=Object.keys(done).length;requestAnimationFrame(fitCells);seenDone=new Set(Object.keys(done).map(Number));rendered=true;$("prog").textContent=n+" of 24 completed";$("fill").style.width=n/24*100+"%";
 $("msg").textContent=phase()==="FINISHED"?"Bingo is on hold. Tap Save my card to keep a copy of your card so far.":winLines().length?"BINGO! Blackout complete. Show your card to your SoC professors to qualify for possible incentives.":"Tap a box, then take a selfie at that event or moment. Fill all 24 boxes for a BINGO."}
 let evt="",checkedIn=0;
-function tick(){const t=$("timer"),p=phase();let s;$("play").classList.toggle("wait",p==="WAITING");$("qn").textContent=Math.max(1,checkedIn);if(p==="FINISHED")uploadCard();if(p==="WAITING"){s="Waiting for the host to start";t.className=""}
+function tick(){const t=$("timer"),p=phase();let s;$("play").classList.toggle("wait",p==="WAITING");$("qn").textContent=Math.max(1,checkedIn);if(p==="FINISHED")uploadCard();if(p==="WAITING"){s="Waiting for the host to start"+(evt?" \u00B7 Up next: "+evt:"");t.className=""}
 else if(p==="RUNNING"){s=evt?"\u25CF NOW: "+evt:"\u25CF Game is ON";t.className="run"}
-else{s="Bingo on hold";t.className="low"}t.textContent=s;
+else{s="Bingo on hold"+(evt?" \u00B7 Up next: "+evt:"");t.className="low"}t.textContent=s;
 if(p==="FINISHED"&&!tick.f){tick.f=1;$("msg").textContent="Bingo is on hold. Tap Save my card to keep a copy of your card so far.";if($("dlg").open)$("dlg").close()}if(p!=="FINISHED")tick.f=0;
 if(isAdmin){const st=$("astat");st.className="ios hero "+p.toLowerCase();st.querySelector(".chip").textContent=p==="FINISHED"?"ON HOLD":p;
 $("atime").textContent=p==="RUNNING"?"ON":"OFF";
-$("ameta").textContent=(p==="RUNNING"?(evt?"Now showing: "+evt:"No event set")+"  \u2022  ":"")+photosTotal+" cards saved"}$("go").classList.toggle("hide",p==="RUNNING");$("off").classList.toggle("hide",p!=="RUNNING");$("go").disabled=false;$("endnow").disabled=p!=="RUNNING";if(liveOpen){$("ltimer").textContent=$("timer").textContent;$("ltimer").className=$("timer").className.includes("low")?"low":""}finale(p);fcardUpdate(p);$("startshow").disabled=p!=="FINISHED";$("lshow").disabled=p!=="FINISHED"}
+$("ameta").textContent=(evt?(p==="RUNNING"?"Now showing: ":"Up next: ")+evt:"No event set")+"  \u2022  "+photosTotal+" cards saved"}$("go").classList.toggle("hide",p==="RUNNING");$("off").classList.toggle("hide",p!=="RUNNING");$("go").disabled=false;$("endnow").disabled=p!=="RUNNING";if(liveOpen){$("ltimer").textContent=$("timer").textContent;$("ltimer").className=$("timer").className.includes("low")?"low":""}finale(p);fcardUpdate(p);$("startshow").disabled=p!=="FINISHED";$("lshow").disabled=p!=="FINISHED"}
 function finale(p){const fin=$("fin");fin.classList.add("hide");return;if(p!=="FINISHED"){finDone=false;finBegun=false;fin.classList.add("hide");return}
 if(finDone)return;const since=Date.now()+off-(state.startedAt+DUR);
 if(since>=FIN){finDone=true;fin.classList.add("hide");return}
@@ -837,7 +837,7 @@ catch(e){$("amsg").textContent="Could not download the cards."}finally{endL()}};
 $("lbdl").onclick=async()=>{if(!bigPid)return;const p=lastPlayers.find(x=>x.pid===bigPid);if(!p)return;try{const r=await adminCall("cardof",{pid:bigPid});if(!r.src){$("amsg").textContent="No saved card yet for "+p.name+".";alert("No saved card yet for "+p.name+".");return}const a=document.createElement("a");a.href=r.src;a.download="kabanata-xxi-"+safeName(p.name)+".jpg";a.click()}catch(e){$("amsg").textContent="Could not download that card."}};
 function enterAdmin(){isAdmin=true;$("admin").className="adm";plist();api("/api/state?a="+Date.now()).then(d=>{if(!promptsDirty&&Array.isArray(d.prompts)&&d.prompts.length===24){prompts=d.prompts;render();plist()}}).catch(()=>{});if(wantLive){wantLive=false;openLive()}}
 $("toAdmin").onclick=async()=>{if(isAdmin){$("admin").classList.toggle("hide");return}const x=prompt("Host password");if(!x)return;pw=x;try{await adminCall("check");sessionStorage.setItem("hb-pw",pw);enterAdmin()}catch(e){pw="";alert(e.err==="locked"?"Too many wrong tries. Try again in "+Math.max(1,Math.ceil((e.wait||60)/60))+" minute(s).":"Wrong password")}};
-(async()=>{$("adminLink").className="";if(pw){try{await adminCall("check");enterAdmin()}catch(e){pw="";sessionStorage.removeItem("hb-pw")}}await sync();poll();(function lp(){setTimeout(async()=>{try{await poll()}catch(e){}lp()},(isAdmin?3000:(weak?20000:8000))+Math.random()*1500)})();setInterval(sync,20000);if(location.hash==="#live"){wantLive=true;if(isAdmin){wantLive=false;openLive()}else $("toAdmin").click()}})();
+(async()=>{if(pw){try{await adminCall("check");enterAdmin()}catch(e){pw="";sessionStorage.removeItem("hb-pw")}}await sync();poll();(function lp(){setTimeout(async()=>{try{await poll()}catch(e){}lp()},(isAdmin?3000:(weak?20000:8000))+Math.random()*1500)})();setInterval(sync,20000);if(location.hash==="#live"){wantLive=true;if(isAdmin){wantLive=false;openLive()}else $("toAdmin").click()}})();
 
 /* mascots load AFTER the page is ready; phones get a lighter set; skipped on slow data or weak signal mode */
 (()=>{const all=document.querySelectorAll(".mc");if(!all.length||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
@@ -862,4 +862,10 @@ $("iab").classList.remove("hide");const android=/Android/i.test(ua);if(android)$
 $("iabCopy").onclick=async()=>{try{await navigator.clipboard.writeText(location.href);$("iabCopy").textContent="Copied. Paste it in Chrome"}catch(e){prompt("Copy this link and open it in Chrome or Safari:",location.href)}};
 $("iabChrome").onclick=()=>{location.href="intent://"+location.host+location.pathname+"#Intent;scheme=https;package=com.android.chrome;end"};
 $("iabX").onclick=()=>{$("iab").classList.add("hide");try{sessionStorage.setItem("hb-iab","x")}catch(e){}}})();
+
+/* discreet host login: no visible button. Tap the logo 5 times quickly, or open the site with #host on the end. */
+(()=>{let n=0,t=0;const open=()=>{n=0;$("toAdmin").click()};
+document.querySelectorAll(".logos").forEach(el=>el.addEventListener("click",()=>{const now=Date.now();n=now-t>1500?1:n+1;t=now;if(n>=5)open()}));
+if(location.hash==="#host"){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}setTimeout(open,1200)}
+addEventListener("hashchange",()=>{if(location.hash==="#host"){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}open()}})})();
 </script></body></html>
