@@ -446,7 +446,7 @@ else{s="Game over";t.className="low"}t.textContent=s;
 if(p==="FINISHED"&&!tick.f){tick.f=1;$("msg").textContent="Tap Save my card to keep a copy of your final card.";if($("dlg").open)$("dlg").close()}if(p!=="FINISHED")tick.f=0;
 if(isAdmin){const st=$("astat");st.className="ios hero "+p.toLowerCase();st.querySelector(".chip").textContent=p;
 $("atime").textContent=p==="RUNNING"?"ON":"OFF";
-$("ameta").textContent=(p==="RUNNING"?(evt?"Now showing: "+evt:"No event set")+"  \u2022  ":"")+photosTotal+" cards saved"}$("go").disabled=p!=="WAITING";if(liveOpen){$("ltimer").textContent=$("timer").textContent;$("ltimer").className=$("timer").className.includes("low")?"low":""}finale(p);fcardUpdate(p);$("startshow").disabled=p!=="FINISHED";$("lshow").disabled=p!=="FINISHED"}
+$("ameta").textContent=(p==="RUNNING"?(evt?"Now showing: "+evt:"No event set")+"  \u2022  ":"")+photosTotal+" cards saved"}$("go").disabled=p==="RUNNING";$("endnow").disabled=p!=="RUNNING";if(liveOpen){$("ltimer").textContent=$("timer").textContent;$("ltimer").className=$("timer").className.includes("low")?"low":""}finale(p);fcardUpdate(p);$("startshow").disabled=p!=="FINISHED";$("lshow").disabled=p!=="FINISHED"}
 function finale(p){const fin=$("fin");if(p!=="FINISHED"){finDone=false;finBegun=false;fin.classList.add("hide");return}
 if(finDone)return;const since=Date.now()+off-(state.startedAt+DUR);
 if(since>=FIN){finDone=true;fin.classList.add("hide");return}
@@ -707,7 +707,7 @@ if((d.resetAt||0)!==(ls.get("hb-epoch")||0)){ls.set("hb-epoch",d.resetAt||0);wip
 if(state.status==="running"&&ls.get("hb-round")!==state.startedAt){ls.set("hb-round",state.startedAt);wipeLocal()}
 if(Array.isArray(d.prompts)&&d.prompts.length===24&&(!isAdmin||!promptsDirty)&&JSON.stringify(d.prompts)!==JSON.stringify(prompts)){prompts=d.prompts;render();if(isAdmin&&$("plist").children.length)plist()}
 tick();showcaseSync();report();uploadCard()}catch(e){$("timer").textContent="Reconnecting…"}finally{splashEnd()}}
-$("go").onclick=async()=>{if(!confirm(photosTotal?"Start a NEW round? This clears the boxes and "+photosTotal+" photos from the last round (check-ins stay). Download them first.":"Turn the game ON for everyone?"))return;try{await adminCall("start");$("amsg").textContent="";poll()}catch(e){$("amsg").textContent=e.hint||(e.err==="already started"?"The game is already ON.":"Could not start (wrong password or server problem).")}};
+$("go").onclick=async()=>{if(!confirm(photosTotal?"Start a NEW round? This clears the boxes and "+photosTotal+" photos from the last round (check-ins stay). Download them first.":"Turn the game ON for everyone?"))return;try{await adminCall("start");$("amsg").textContent="Game is ON.";$("amsg").textContent="";poll()}catch(e){$("amsg").textContent=e.hint||(e.err==="already started"?"The game is already ON.":"Could not start (wrong password or server problem).")}};
 $("reset").onclick=async()=>{if(!confirm("Reset the game for everyone?\n\nThis clears every student's check-in and card, the live board and all collected photos. Download the attendance, cards and photos first!"))return;try{await adminCall("reset");poll()}catch(e){$("amsg").textContent="Reset failed."}};
 $("save").onclick=async()=>{try{await adminCall("prompts",{prompts});promptsDirty=false;$("amsg").textContent="Saved ✓"}catch(e){$("amsg").textContent="Save failed."}};
 const crcT=(()=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();

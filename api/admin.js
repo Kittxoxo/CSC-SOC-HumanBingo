@@ -30,15 +30,17 @@ module.exports = async (req, res) => {
 
     switch (body.action) {
       case "start": {
-        if (state.status === "running") return res.status(409).json({ error: "already started" });
+        if (state.status === "running" && state.startedAt && now < state.startedAt + state.duration) return res.status(409).json({ error: "already started" });
         // new round: card pictures, boxes and claims are cleared, but students stay checked in
-        await db.patch("players", ALL, { mask: 0, t_ms: now, bingo_ms: 0, claimed_ms: 0, card_img: null, card_thumb: null, card_at: 0 });
+        try { await db.patch("players", ALL, { mask: 0, t_ms: now, bingo_ms: 0, claimed_ms: 0, card_img: null, card_thumb: null, card_at: 0 }); }
+        catch (e) { if (e.status !== 400) throw e; await db.patch("players", ALL, { mask: 0, t_ms: now, bingo_ms: 0, claimed_ms: 0 }); } // older database without card columns: still start
         await db.setState({ status: "running", started_ms: now, duration_ms: 12 * 60 * 60 * 1000, /* no countdown: the game stays ON until the host ends it */ showcase_open: false, showcase_rank: 1 });
         return res.status(200).json({ ok: true });
       }
       case "event": { // "now showing" label students see instead of a timer
         const name = String(body.name == null ? "" : body.name).replace(/\s+/g, " ").trim().slice(0, 80);
-        await db.setState({ event_name: name || null });
+        try { await db.setState({ event_name: name || null }); }
+        catch (e) { if (e.status === 400) return res.status(500).json({ error: "server", hint: "Database is out of date: run the latest supabase/schema.sql in the Supabase SQL Editor." }); throw e; }
         return res.status(200).json({ ok: true, event: name });
       }
       case "endnow":
